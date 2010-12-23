@@ -2,7 +2,10 @@ module ActiveMerchant #:nodoc:
   module Billing #:nodoc:
         
     class UsaEpayGateway < Gateway
-    	URL = 'https://www.usaepay.com/gate.php'
+      class_inheritable_accessor :test_url, :live_url
+
+    	self.live_url = 'https://www.usaepay.com/gate.php'
+      self.test_url = 'https://sandbox.usaepay.com/gate.php'
       
       self.supported_cardtypes = [:visa, :master, :american_express]
       self.supported_countries = ['US']
@@ -157,10 +160,11 @@ module ActiveMerchant #:nodoc:
 
       
       def commit(action, parameters)
-        response = parse( ssl_post(URL, post_data(action, parameters)) )
+        url = @options[:test] || test? ? self.test_url : self.live_url
+        response = parse( ssl_post(url, post_data(action, parameters)) )
         
         Response.new(response[:status] == 'Approved', message_from(response), response, 
-          :test => @options[:test] || test?,
+          :test => false,
           :authorization => response[:ref_num],
           :cvv_result => response[:cvv2_result_code],
           :avs_result => { 
@@ -184,7 +188,7 @@ module ActiveMerchant #:nodoc:
         parameters[:command]  = TRANSACTIONS[action]
         parameters[:key] = @options[:login]
         parameters[:software] = 'Active Merchant'
-        parameters[:testmode] = @options[:test] ? 1 : 0
+        parameters[:testmode] = 0
 
         parameters.collect { |key, value| "UM#{key}=#{CGI.escape(value.to_s)}" }.join("&")
       end
