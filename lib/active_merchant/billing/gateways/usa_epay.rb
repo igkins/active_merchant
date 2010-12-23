@@ -86,7 +86,11 @@ module ActiveMerchant #:nodoc:
         
         if options.has_key? :ip
           post[:ip] = options[:ip]
-        end        
+        end
+
+        if options.has_key? :addcustomer
+          post[:addcustomer] = 'yes'
+        end
       end
 
       def add_address(post, credit_card, options)
@@ -154,7 +158,8 @@ module ActiveMerchant #:nodoc:
           :error => fields['UMerror'],
           :error_code => fields['UMerrorcode'],
           :acs_url => fields['UMacsurl'],
-          :payload => fields['UMpayload']
+          :payload => fields['UMpayload'],
+          :customer_num => fields['UMcustnum']
         }.delete_if{|k, v| v.nil?}         
       end     
 
