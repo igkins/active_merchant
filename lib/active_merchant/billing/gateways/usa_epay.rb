@@ -83,13 +83,21 @@ module ActiveMerchant #:nodoc:
         if options.has_key? :customer
           post[:custid] = options[:customer]
         end
-        
+
         if options.has_key? :ip
           post[:ip] = options[:ip]
         end
 
         if options.has_key? :addcustomer
           post[:addcustomer] = 'yes'
+        end
+
+        if options.has_key? :schedule
+          post[:schedule] = options[:schedule]
+        end
+
+        if options.has_key? :billsourcekey
+          post[:billsourcekey] = 'yes'
         end
       end
 
